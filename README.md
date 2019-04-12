@@ -213,3 +213,26 @@ class IV_calculation():
 
     table = pd.concat([KEY,Information_Value],axis=1)
     table.to_csv(OUTPUT,encoding='utf-8',index=False)
+
+# draw bi-var chart of each feature
+
+def plot(file,key):
+
+    from matplotlib import pyplot as plt
+    c=[]
+    data = pd.read_excel(file,sheet_name = key)
+    for i in range(len(data.label.values)):
+        if isinstance(data.label[i],str) == True:
+            data.label[i] = (int(data.label.values[i][1])+int(data.label.values[i][4]))*0.5
+    data.sort_values(by=['label'],inplace=True)
+    for i in range(len(data.label.values)):
+        c1 = data[data.label == data.label.values[i]]['count'].values[0]
+        c = np.append(c,np.linspace(data.label.values[i],data.label.values[i],c1))
+    fig,left_axis=plt.subplots()
+    right_axis = left_axis.twinx()
+    left_axis.hist(c,histtype='bar',facecolor='pink',rwidth=0.8,alpha=0.75,edgecolor='black')
+    right_axis.plot(data.label.values,data.Woe.values,color='black',linewidth = 1,marker='o',markersize=5)
+    left_axis.set_xlabel(key.split('_')[-1],fontsize = 15)
+    left_axis.set_ylabel('Count',fontsize = 15)
+    right_axis.set_ylabel('Weight_of_evidence',fontsize = 15)
+    plt.show() 
